@@ -11,10 +11,48 @@ module.exports = {
         })
     },
     getAdvert(id, callback) {
-
+        return Advert.findByPk(id)
+        .then(advert => {
+            callback(null, advert);
+        }).catch(err => {
+            callback(err);
+        })
     },
     addAdvert(newAd, callback) {
+        return Advert.create({
+            title: newAd.title,
+            description: newAd.description
+        })
+        .then(advert => {
+            callback(null, advert);
+        }).catch(err => {
+            callback(err);
+        })
+    },
+    deleteAdvert(id, callback) {
+        return Advert.destroy({
+            where: {id}
+        })
+        .then(advert => {
+            callback(null, advert);
+        }).catch(err => {
+            callback(err);
+        })
+    },
+    updateAdvert(id, updatedAd, callback) {
+        return Advert.findByPk(id)
+        .then(advert => {
+            if (!advert) {
+                return callback("Ad doesn't exist");
+            }
 
+            advert.update(updatedAd)
+            .then(() => {
+                callback(null, advert);
+            }).catch(err => {
+                callback(err);
+            });
+        });
     }
     
 }
