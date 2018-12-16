@@ -1,5 +1,6 @@
 const Topic = require("./models").Topic;
 const Post = require("./models").Post;
+const Flair = require("./models").Flair;
 
 module.exports = {
 
@@ -15,7 +16,11 @@ module.exports = {
         return Topic.findByPk(id, {
             include: [{
                 model: Post,
-                as: "posts"
+                as: "posts",
+            },
+            {
+                model: Flair,
+                as: "flairs"
             }]
         })
         .then(topic => {

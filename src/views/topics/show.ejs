@@ -8,6 +8,12 @@
 
     <main class="container">
       <h1><%= topic.title %></h1>
+      <div>
+      <% topic.flairs.forEach((flair) => { %>
+        <a class="badge" style="color:<%= flair.color %>;" href="/topics/<%= topic.id %>/flairs/<%= flair.id %>"> <%= flair.name %> </a>
+      <% }) %>
+      </div>
+      <a href="/topics/<%= topic.id %>/flairs/new" class="btn btn-success">New Flair</a>
       <a href="/topics/<%= topic.id %>/edit" class="btn btn-warning">Edit</a>
       <a href="/topics/<%= topic.id %>/posts/new" class="btn btn-success">New Post</a>
       
