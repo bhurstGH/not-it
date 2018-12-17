@@ -16,7 +16,6 @@ describe("routes : topics", () => {
             })
             .then(topic => {
                 this.topic = topic;
-                console.log(this.topic);
                 done();
             }).catch(err => {
                 console.log(err);
@@ -79,6 +78,25 @@ describe("routes : topics", () => {
                 }
             );
         });
+
+        it("should not create a topic that doesn't pass validation", (done) => {
+            request.post({
+                url: `${base}create`,
+                form: {
+                    title: "1234",
+                    description: "123456789"
+                }
+            }, (err, res, body) => {
+                Topic.findOne({where: {title: "1234"}})
+                .then((topic) => {
+                    expect(topic).toBeNull();
+                    done();
+                }).catch((err) => {
+                    console.log(err);
+                    done();
+                })
+            })
+        })
     });
 
     describe("GET /topics/:id", () => {
