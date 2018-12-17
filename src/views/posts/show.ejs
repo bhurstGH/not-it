@@ -7,12 +7,13 @@
     <% include ../static/partials/navbar.ejs %>
 
     <main class="container">
-      <h1><%= post.title %></h1>
-      <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
+        <% include ../static/partials/messages.ejs %>
+        <h1><%= post.title %></h1>
+        <a href="/topics/<%= post.topicId %>/posts/<%= post.id %>/edit" class="btn btn-warning">Edit</a>
         <form style="display:initial" action="/topics/<%= post.topicId %>/posts/<%= post.id %>/destroy" method="post">
             <button type="submit" class="btn btn-danger">Delete</button>
         </form>
-      <p><%= post.body %></p>
+        <p><%= post.body %></p>
     </main>
 
     <% include ../static/partials/baseScripts.ejs %>
