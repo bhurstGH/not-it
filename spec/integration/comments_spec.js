@@ -199,6 +199,92 @@ describe("routes : comments", () => {
 
             });
 
+            it("should not delete the comment if member is not owner", (done) => {
+                User.create({
+                    email: "another@user.com",
+                    password: "123456",
+                    role: "member"
+                })
+                .then((user) => {
+                    
+                    expect(user.id).toBe(2);
+                    expect(user.id).not.toBe(this.user.id);
+
+                    Comment.create({
+                        body: "Don't delete me!",
+                        userId: user.id,
+                        postId: this.post.id
+                    })
+                    .then((comment) => {
+                        expect(comment).not.toBeNull();
+                        expect(comment.userId).not.toBe(this.user.id);
+                        
+                        Comment.findAll()
+                        .then((comments) => {
+                            const commentCountBeforeDelete = comments.length;
+                            expect(commentCountBeforeDelete).toBe(2);
+                            request.post(`${base}${this.topic.id}/posts/${this.post.id}/comments/${comment.id}/destroy`,
+                                (err, res, body) => {
+                                Comment.findAll()
+                                .then((comments) => {
+                                    expect(comments.length).toBe(commentCountBeforeDelete);
+                                    done();
+                                })
+                            })
+                        })
+                    })
+                })
+            });
+
+            it("should allow admin to delete comments", (done) => {
+                Comment.create({
+                    body: "Delete me!",
+                    userId: this.user.id,
+                    postId: this.post.id
+                })
+                .then((comment) => {
+                    User.create({
+                        email: "another@user.com",
+                        password: "123456",
+                        role: "admin"
+                    })
+                    .then((user) => {
+                        expect(user.id).toBe(2);
+                        expect(user.id).not.toBe(this.user.id);
+                        expect(user.role).toBe("admin");
+                        
+                        request.get({
+                            url: "http://localhost:3000/auth/fake",
+                            form: {
+                                role: user.role,
+                                userId: user.id,
+                                email: user.email
+                            }
+                        },
+                        (err, res, body) => {
+
+                            expect(comment).not.toBeNull();
+                            expect(comment.userId).toBe(this.user.id);
+                            expect(comment.userId).not.toBe(user.id);
+                            
+                            Comment.findAll()
+                            .then((comments) => {
+                                const commentCountBeforeDelete = comments.length;
+                                expect(commentCountBeforeDelete).toBe(2);
+                                request.post(`${base}${this.topic.id}/posts/${this.post.id}/comments/${comment.id}/destroy`,
+                                (err, res, body) => {
+                                    Comment.findAll()
+                                    .then((comments) => {
+                                        expect(comments.length).toBe(commentCountBeforeDelete - 1);
+                                        done();
+                                    })
+                                })
+                            })
+                        })
+                    });
+                })
+            });
+
         });
 
     });
