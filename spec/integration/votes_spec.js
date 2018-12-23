@@ -141,6 +141,7 @@ describe("routes : votes", () => {
               }
             );
           });
+          
         });
 
         describe("GET /topics/:topicId/posts/:postId/votes/downvote", () => {
@@ -173,6 +174,49 @@ describe("routes : votes", () => {
           });
         });
 
+        describe("vote validations", () => {
+
+            it("should not allow an vote value other than 1 or -1", (done) => {
+                Vote.create({
+                    value: 2,
+                    postId: this.post.id,
+                    userId: this.user.id
+                })
+                .then((vote) => {
+                    done();
+                })
+                .catch((err) => {
+                    expect(err.message).toContain("Validation error");
+                    done();
+                })
+            })
+
+            it("should not allow more than one vote per user per post", () => {
+                Vote.create({
+                    value: 1,
+                    postId: this.post.id,
+                    userId: this.user.id
+                })
+                .then((vote) => {
+                    expect(vote).not.toBeNull();
+
+                    Vote.create({
+                        value: 1,
+                        postId: this.post.id,
+                        userId: this.user.id
+                    })
+                    .then((vote) => {
+                        done();
+                    })
+                    .catch((err) => {
+                        expect(err.message).toContain("Validation error");
+                        done();
+                    });
+                });
+            });
+            
+        })
+        
     }); 
       
 });

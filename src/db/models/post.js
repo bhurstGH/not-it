@@ -45,6 +45,24 @@ module.exports = (sequelize, DataTypes) => {
     }).reduce((prev, next) => {
       return prev + next;
     });
+  };
+  // helper function so the code is a bit DRYer
+  const voteHelper = (votes, id, voteValue) => {
+    let hasVote = votes.filter((vote) => {
+      return vote.userId === id && vote.value === voteValue;
+    });
+    if (hasVote.length === 1 && hasVote[0].userId == id) {
+      return true;
+    } else {
+      return false;
+    }
   }
+  Post.prototype.hasUpvoteFor = function(id) {
+    return voteHelper(this.votes, id, 1);
+  };
+  Post.prototype.hasDownvoteFor = function(id) {
+    return voteHelper(this.votes, id, -1);
+  };
+  
   return Post;
 };

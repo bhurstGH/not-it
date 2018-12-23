@@ -2,6 +2,7 @@ const sequelize = require("../../src/db/models/index").sequelize;
 const Topic = require("../../src/db/models").Topic;
 const Post = require("../../src/db/models").Post;
 const User = require("../../src/db/models").User;
+const Vote = require("../../src/db/models").Vote;
 
 describe("Post", () => {
     
@@ -10,31 +11,59 @@ describe("Post", () => {
         this.topic;
         this.post;
         this.user;
+        this.user2;
+        this.user3;
+
         sequelize.sync({force: true}).then((res) => {
             
-           User.create({
-               email: "starman@tesla.com",
-               password: "Trekkie4lyfe"
-           })
-           .then((user) => {
-               this.user = user;
+           User.bulkCreate([
+                {
+                    email: "starman@tesla.com",
+                    password: "Trekkie4lyfe"
+                }, {
+                    email: "a@a.com",
+                    password: "123456"
+                }, {
+                    email: "b@b.com",
+                    password: "654321"
+                }
+            ], {returning: true})
+           .then((users) => {
+               this.user = users[0];
+               this.user2 = users[1];
+               this.user3 = users[2];
                Topic.create({
                 title: "Expeditions to Alpha Centauri",
                 description: "A compilation of reports from recent visits to the star system.",
                 posts: [{
                   title: "My first visit to Proxima Centauri b",
                   body: "I saw some rocks.",
-                  userId: this.user.id
+                  userId: this.user.id,
+                  votes: [{
+                      value: 1,
+                      userId: this.user.id
+                  },{
+                      value: -1,
+                      userId: this.user2.id
+                  }, {
+                      value: 1,
+                      userId: this.user3.id
+                  }]
                 }]
               }, {
-                include: {
+                include: [{
                   model: Post,
-                  as: "posts"
-                }
+                  as: "posts",
+                  include: [{
+                      model: Vote,
+                      as: "votes"
+                  }]
+                }]
               })
               .then((topic) => {
-                this.topic = topic; //store the topic
-                this.post = topic.posts[0]; //store the post
+                this.topic = topic; 
+                this.post = topic.posts[0]; 
+
                 done();
               })
            })
@@ -143,5 +172,34 @@ describe("Post", () => {
         });
         
     });
+
+    describe("#getPoints()", () => {
+        
+        it("should return the number of votes a post has", (done) => {
+            expect(this.post.getPoints()).toBe(1); //+1, -1, +1 = 1.
+            done();
+        })
+        
+    });
+
+    describe("#hasUpvoteFor()", () => {
+        
+        it("should return true if the user has already upvoted", (done) => {
+            expect(this.post.hasUpvoteFor(this.user.id)).toBe(true);
+            expect(this.post.hasUpvoteFor(this.user2.id)).toBe(false);
+            done();
+        })
+        
+    });
+
+    describe("#hasDownvoteFor()", () => {
+        
+        it("should return true if the user has already downvoted", (done) => {
+            expect(this.post.hasDownvoteFor(this.user2.id)).toBe(true);
+            expect(this.post.hasDownvoteFor(this.user3.id)).toBe(false);
+            done();
+        })
+        
+    })
     
 })
