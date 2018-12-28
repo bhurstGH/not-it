@@ -4,8 +4,9 @@ const base = "http://localhost:3000/users/";
 const User = require("../../src/db/models").User;
 const sequelize = require("../../src/db/models/index").sequelize;
 const Topic = require("../../src/db/models").Topic;
- const Post = require("../../src/db/models").Post;
- const Comment = require("../../src/db/models").Comment;
+const Post = require("../../src/db/models").Post;
+const Comment = require("../../src/db/models").Comment;
+const Favorite = require("../../src/db/models").Favorite;
 
 describe("routes : users", () => {
     
@@ -98,6 +99,7 @@ describe("routes : users", () => {
           this.user;
           this.post;
           this.comment;
+          this.favorite;
    
           User.create({
             email: "starman@tesla.com",
@@ -121,17 +123,25 @@ describe("routes : users", () => {
               }
             })
             .then((res) => {
-              this.post = res.posts[0];
-   
-              Comment.create({
-                body: "This comment is alright.",
-                postId: this.post.id,
-                userId: this.user.id
-              })
-              .then((res) => {
-                this.comment = res;
-                done();
-              })
+                this.post = res.posts[0];
+
+                Favorite.create({
+                    userId: this.user.id,
+                    postId: this.post.id
+                })
+                .then((favorite) => {
+                    this.favorite = favorite;
+                    
+                    Comment.create({
+                        body: "This comment is alright.",
+                        postId: this.post.id,
+                        userId: this.user.id
+                    })
+                    .then((res) => {
+                        this.comment = res;
+                        done();
+                    })
+                })
             })
           })
    
@@ -142,6 +152,7 @@ describe("routes : users", () => {
             request.get(`${base}${this.user.id}`, (err, res, body) => {
               expect(body).toContain("Snowball Fighting");
               expect(body).toContain("This comment is alright.");
+              expect(body).toContain("Favorites");
               done();
             });
         });
