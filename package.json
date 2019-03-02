@@ -1,5 +1,5 @@
 {
-  "name": "bloccit",
+  "name": "not-it",
   "version": "1.0.0",
   "description": "A Reddit-like application for users to discuss and share content",
   "main": "src/server.js",
