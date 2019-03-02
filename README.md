@@ -1,0 +1,11 @@
+This reddit-a-like was my biggest and most robust project up to this point. So much went into this that was new to me and it was a little dizzying.
+
+After a few basic tutorials and smaller applications, this was my most substantial use of Node and Express. There was a lot of opportunity to sink my teeth into the back end. Working with the routes, controllers, and views forced me to really understand the separation of those concerns and how they work together.
+
+EJS was used for the views and templating and Bootstrap for styling. PostgreSQL with Sequelize for the database. Authorization policies, authentication with Passport.js, the use of bcryptjs, express-flash messages, express-validator and express-session were all firsts for me here. 
+
+I also deployed to Heroku and there was a learning curve here. I had to reconcile the dev, test, and production databases and gain a better understanding of environmental variables across different... Well, environments. This was a really important part of my developer experience. It's easy to find tutorials that teach you blocks of isolated code and follow along. It is much more difficult to get a solid handle on the the less obvious and tangible aspects of this field, such as deploying something to production. I really took a lot of a value away from this process, simple as it may be.
+
+On a final note, I also dove into Test Driven Development using Jasmine. This presented some unique hurdles. Understanding what was happening and overcoming the feeling that I was writing twice as much code was one, but I was still able to understand why there is a place for TDD. There was also the bonuses of better understanding "unit" vs "integration" and the use of tools like faker to populate the test database with dummy data. What was most challenging was running into instances of spending more time debugging my tests than my production code. My production code would fine while my tests were not behaving as expected on more than one occassion. I eventually got better at it as I worked through the project, but it was probably the most challenging frustration.
+
+My next project, a Wikipedia-esque app, used much of the same technology stack as this one, and everything as a whole made more sense the second time around.
